@@ -6,7 +6,7 @@
 /*   By: sudelory <sudelory@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/06 13:19:08 by sudelory          #+#    #+#             */
-/*   Updated: 2025/01/09 12:24:25 by sudelory         ###   ########.fr       */
+/*   Updated: 2025/01/11 19:27:31 by sudelory         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -68,7 +68,7 @@ char	*ft_strjoin(char const *s1, char const *s2)
 		return (0);
 	temp = (char *)malloc(ft_strlen(s1) + ft_strlen(s2) + 1);
 	if (!temp)
-		return (0);
+		return (NULL);
 	while (s1[i])
 	{
 		temp[i] = s1[i];

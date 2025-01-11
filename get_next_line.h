@@ -6,7 +6,7 @@
 /*   By: sudelory <sudelory@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/06 13:19:12 by sudelory          #+#    #+#             */
-/*   Updated: 2025/01/09 12:37:14 by sudelory         ###   ########.fr       */
+/*   Updated: 2025/01/10 15:51:09 by sudelory         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,7 +18,7 @@
 # include <unistd.h>
 
 # ifndef BUFFER_SIZE
-#define BUFFER_SIZE 42
+#  define BUFFER_SIZE 42
 # endif
 
 void	*ft_calloc(size_t nmemb, size_t size);

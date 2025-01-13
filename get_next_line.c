@@ -6,7 +6,7 @@
 /*   By: sudelory <sudelory@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/06 13:19:04 by sudelory          #+#    #+#             */
-/*   Updated: 2025/01/11 20:54:13 by sudelory         ###   ########.fr       */
+/*   Updated: 2025/01/13 17:16:26 by sudelory         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,7 +18,7 @@ static char	*extract_line(char *buffer)
 	char	*line;
 
 	i = 0;
-	if (!buffer || !*buffer)
+	if (!buffer[i])
 		return (NULL);
 	while (buffer[i] && buffer[i] != '\n')
 		i++;
@@ -33,6 +33,7 @@ static char	*extract_line(char *buffer)
 	}
 	if (buffer[i] && buffer[i] == '\n')
 		line[i++] = '\n';
+	line[i] = '\0';
 	return (line);
 }
 
@@ -47,26 +48,25 @@ static char	*update_buffer(char *buffer)
 	while (buffer[i] && buffer[i] != '\n')
 		i++;
 	if (!buffer[i])
-	{
-		free(buffer);
-		return (NULL);
-	}
+		return (free(buffer), NULL);
 	new_buffer = ft_calloc(ft_strlen(buffer) - i + 1, sizeof(char));
 	if (!new_buffer)
-		return (NULL);
+		return (free(buffer), NULL);
 	i++;
 	while (buffer[i])
 		new_buffer[j++] = buffer[i++];
-	free(buffer);
-	return (new_buffer);
+	return (free(buffer), new_buffer);
 }
 
 static char	*read_from_fd(int fd, char *result)
 {
-	char	buffer[BUFFER_SIZE + 1];
-	int		bytes_read;
+	char	*buffer;
+	ssize_t	bytes_read;
 	char	*temp;
 
+	buffer = ft_calloc(BUFFER_SIZE + 1, sizeof(char));
+	if (!buffer)
+		return (free(result), NULL);
 	if (!result)
 		result = ft_calloc(1, 1);
 	bytes_read = 1;
@@ -74,17 +74,17 @@ static char	*read_from_fd(int fd, char *result)
 	{
 		bytes_read = read(fd, buffer, BUFFER_SIZE);
 		if (bytes_read == -1)
-			return (free(result), NULL);
-		buffer[bytes_read] = 0;
+			return (free(buffer), free(result), NULL);
+		buffer[bytes_read] = '\0';
 		temp = result;
 		result = ft_strjoin(result, buffer);
 		free(temp);
 		if (!result)
-			return (NULL);
+			return (free(buffer), NULL);
 		if (ft_strchr(buffer, '\n'))
 			break ;
 	}
-	return (result);
+	return (free(buffer), result);
 }
 
 char	*get_next_line(int fd)

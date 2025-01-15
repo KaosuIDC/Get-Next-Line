@@ -6,7 +6,7 @@
 /*   By: sudelory <sudelory@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/06 13:19:04 by sudelory          #+#    #+#             */
-/*   Updated: 2025/01/13 17:16:26 by sudelory         ###   ########.fr       */
+/*   Updated: 2025/01/15 15:06:06 by sudelory         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,11 +18,11 @@ static char	*extract_line(char *buffer)
 	char	*line;
 
 	i = 0;
-	if (!buffer[i])
+	if (!buffer[i] || !buffer)
 		return (NULL);
 	while (buffer[i] && buffer[i] != '\n')
 		i++;
-	line = ft_calloc(i + 2, sizeof(char));
+	line = ft_calloc(i + (buffer[i] == '\n') + 1, sizeof(char));
 	if (!line)
 		return (NULL);
 	i = 0;
@@ -31,7 +31,7 @@ static char	*extract_line(char *buffer)
 		line[i] = buffer[i];
 		i++;
 	}
-	if (buffer[i] && buffer[i] == '\n')
+	if (buffer[i] == '\n')
 		line[i++] = '\n';
 	line[i] = '\0';
 	return (line);
@@ -45,28 +45,29 @@ static char	*update_buffer(char *buffer)
 
 	i = 0;
 	j = 0;
+	if (!buffer)
+		return (NULL);
 	while (buffer[i] && buffer[i] != '\n')
 		i++;
+	if (buffer[i] == '\n')
+		i++;
 	if (!buffer[i])
-		return (free(buffer), NULL);
+		return (free_and_null(buffer, NULL));
 	new_buffer = ft_calloc(ft_strlen(buffer) - i + 1, sizeof(char));
 	if (!new_buffer)
-		return (free(buffer), NULL);
-	i++;
+		return (free_and_null(buffer, NULL));
 	while (buffer[i])
 		new_buffer[j++] = buffer[i++];
-	return (free(buffer), new_buffer);
+	free(buffer);
+	return (new_buffer);
 }
 
 static char	*read_from_fd(int fd, char *result)
 {
-	char	*buffer;
-	ssize_t	bytes_read;
-	char	*temp;
+	static char	buffer[BUFFER_SIZE + 1];
+	ssize_t		bytes_read;
+	char		*temp;
 
-	buffer = ft_calloc(BUFFER_SIZE + 1, sizeof(char));
-	if (!buffer)
-		return (free(result), NULL);
 	if (!result)
 		result = ft_calloc(1, 1);
 	bytes_read = 1;
@@ -74,17 +75,17 @@ static char	*read_from_fd(int fd, char *result)
 	{
 		bytes_read = read(fd, buffer, BUFFER_SIZE);
 		if (bytes_read == -1)
-			return (free(buffer), free(result), NULL);
+			return (free_and_null(result, NULL));
 		buffer[bytes_read] = '\0';
 		temp = result;
 		result = ft_strjoin(result, buffer);
 		free(temp);
 		if (!result)
-			return (free(buffer), NULL);
+			return (NULL);
 		if (ft_strchr(buffer, '\n'))
 			break ;
 	}
-	return (free(buffer), result);
+	return (result);
 }
 
 char	*get_next_line(int fd)
@@ -98,29 +99,35 @@ char	*get_next_line(int fd)
 	if (!buffer)
 		return (NULL);
 	line = extract_line(buffer);
+	if (!line)
+	{
+		free(buffer);
+		buffer = NULL;
+		return (NULL);
+	}
 	buffer = update_buffer(buffer);
 	return (line);
 }
 
-/*#include <fcntl.h>
-#include <stdio.h>
+// #include <fcntl.h>
+// #include <stdio.h>
 
-int main(void)
-{
-	int fd = open("test.txt", O_RDONLY);
-	if (fd == -1)
-	{
-		perror("Error opening file");
-		return (1);
-	}
+// int main(void)
+// {
+// 	int fd = open("test.txt", O_RDONLY);
+// 	if (fd == -1)
+// 	{
+// 		perror("Error opening file");
+// 		return (1);
+// 	}
 
-	char *line;
-	while ((line = get_next_line(fd)) != NULL)
-	{
-		printf("%s", line);
-		free(line);
-	}
+// 	char *line;
+// 	while ((line = get_next_line(fd)) != NULL)
+// 	{
+// 		printf("%s", line);
+// 		free(line);
+// 	}
 
-	close(fd);
-	return (0);
-}*/
+// 	close(fd);
+// 	return (0);
+// }

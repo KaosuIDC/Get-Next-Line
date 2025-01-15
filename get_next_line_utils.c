@@ -6,7 +6,7 @@
 /*   By: sudelory <sudelory@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/06 13:19:08 by sudelory          #+#    #+#             */
-/*   Updated: 2025/01/13 15:35:38 by sudelory         ###   ########.fr       */
+/*   Updated: 2025/01/15 14:45:50 by sudelory         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -86,4 +86,12 @@ char	*ft_strjoin(char const *s1, char const *s2)
 	}
 	temp[i] = '\0';
 	return (temp);
+}
+
+char	*free_and_null(char *s1, char *s2)
+{
+	free(s1);
+	if (s2)
+		free(s2);
+	return (NULL);
 }
